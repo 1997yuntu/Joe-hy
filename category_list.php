@@ -1,7 +1,7 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
 if (!isset($_SESSION['admin_id'])) { 
     header('Location: login.php'); 
     exit; 
@@ -61,6 +61,7 @@ try {
     <link rel="stylesheet" type="text/css" href="../assets/css/materialdesignicons.min.css">
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="../assets/css/style.min.css">
+<title>Category List - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

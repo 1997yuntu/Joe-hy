@@ -1,7 +1,7 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
 @set_time_limit(0);
 if (!isset($_SESSION['admin_id'])) { header('Location: login.php'); exit; }
 if (file_exists('../config.php')) { require_once '../config.php'; } else { die("出现错误！配置文件丢失。"); }
@@ -121,6 +121,7 @@ check_for_updates();
 <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="../assets/css/style.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+<title>Update - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

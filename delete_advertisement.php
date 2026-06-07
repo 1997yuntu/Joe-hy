@@ -1,7 +1,7 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
 if (!isset($_SESSION['admin_id'])) { 
     header('Location: login.php'); 
     exit; 
@@ -73,6 +73,7 @@ try {
     margin: 1rem 0;
 }
 </style>
+<title>Delete Advertisement - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

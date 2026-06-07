@@ -1,7 +1,7 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
 if (!isset($_SESSION['admin_id'])) { header('Location: login.php'); exit; }
 if (file_exists('../config.php')) { require_once '../config.php'; } else { die("出现错误！配置文件丢失。"); }
 require_once '../common/TemplateManager.php';
@@ -141,6 +141,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             background-color: #17a2b8;
         }
     </style>
+<title>Template - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

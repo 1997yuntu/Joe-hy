@@ -1,7 +1,7 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
 if (!isset($_SESSION['admin_id'])) { 
     header('Location: login.php'); 
     exit; 
@@ -86,6 +86,7 @@ if (!empty($data['logo'])) {
 }
 .form-group { margin-bottom: 1rem; }
 </style>
+<title>Friend Link Add - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

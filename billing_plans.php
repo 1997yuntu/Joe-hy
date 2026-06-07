@@ -1,7 +1,7 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
 if (!isset($_SESSION['admin_id'])) { header('Location: login.php'); exit; }
 if (file_exists('../config.php')) { require_once '../config.php'; } else { die("出现错误！配置文件丢失。"); }
 $username = htmlspecialchars($_SESSION['admin_username']);
@@ -81,6 +81,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .badge-card { background-color: #fef3c7; color: #92400e; }
         .badge-normal { background-color: #eff6ff; color: #2563eb; }
     </style>
+<title>Billing Plans - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

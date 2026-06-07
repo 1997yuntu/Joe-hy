@@ -1,5 +1,5 @@
 <?php
-@session_start();
+session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 if (!file_exists('../config.php')) {

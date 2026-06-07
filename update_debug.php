@@ -1,5 +1,5 @@
 <?php
-@session_start();
+session_start();
 @error_reporting(E_ALL);
 @ini_set('display_errors', 'On');
 if (!isset($_SESSION['admin_id'])) { header('Location: login.php'); exit; }
@@ -55,6 +55,7 @@ define('UPDATE_API_URL', 'https://api.scdnn.com/updates/api.php');
             font-family: 'Courier New', monospace;
         }
     </style>
+<title>Update Debug - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

@@ -1,7 +1,7 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
 if (!isset($_SESSION['admin_id'])) { header('Location: login.php'); exit; }
 if (file_exists('../config.php')) { require_once '../config.php'; } else { die("出现错误！配置文件丢失。"); }
 $username = isset($_SESSION['admin_username']) ? htmlspecialchars($_SESSION['admin_username'], ENT_QUOTES, 'UTF-8') : '';
@@ -200,6 +200,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 .table-responsive{overflow-x:auto}
 @media(max-width:768px){.card-search .row>div{margin-bottom:10px}.btn-group{flex-wrap:wrap}}
 </style>
+<title>Cdkeys - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

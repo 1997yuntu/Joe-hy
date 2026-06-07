@@ -1,5 +1,5 @@
 <?php
-@session_start();
+session_start();
 @error_reporting(E_ALL);
 @ini_set('display_errors', 'On');
 if (!isset($_SESSION['admin_id'])) { header('Location: login.php'); exit; }
@@ -77,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['recipient_email'])) {
             font-size: 13px;
         }
     </style>
+<title>Mail Test - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">

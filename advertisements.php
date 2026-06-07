@@ -1,41 +1,58 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
+
 if (!isset($_SESSION['admin_id'])) { 
     header('Location: login.php'); 
     exit; 
 }
+
 if (file_exists('../config.php')) { 
     require_once '../config.php'; 
 } else { 
     die("出现错误！配置文件丢失。"); 
 }
+
 $username = htmlspecialchars($_SESSION['admin_username']);
 $feedback_msg = '';
 $feedback_type = '';
+
 try {
     $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET, DB_USER, DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
     if (isset($_GET['delete'])) {
         $id = intval($_GET['delete']);
         $stmt = $pdo->prepare("DELETE FROM sl_advertisements WHERE id = ?");
         $stmt->execute([$id]);
-        $feedback_msg = "广告删除成功！";
-        $feedback_type = "success";
+        $_SESSION['feedback_msg'] = "广告删除成功！";
+        $_SESSION['feedback_type'] = "success";
+        header('Location: advertisements.php');
+        exit;
     }
+    
     if (isset($_GET['toggle_status'])) {
         $id = intval($_GET['toggle_status']);
         $stmt = $pdo->prepare("UPDATE sl_advertisements SET status = IF(status = 'active', 'inactive', 'active') WHERE id = ?");
         $stmt->execute([$id]);
-        $feedback_msg = "广告状态已更新！";
-        $feedback_type = "success";
+        $_SESSION['feedback_msg'] = "广告状态已更新！";
+        $_SESSION['feedback_type'] = "success";
+        header('Location: advertisements.php');
+        exit;
     }
+    
     $stmt = $pdo->query("SELECT * FROM sl_advertisements ORDER BY sort_order DESC, created_at DESC");
     $ads = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
-    $feedback_msg = "数据库错误: " . $e->getMessage();
+    $feedback_msg = "数据库错误：" . $e->getMessage();
     $feedback_type = "error";
+}
+
+if (isset($_SESSION['feedback_msg'])) {
+    $feedback_msg = $_SESSION['feedback_msg'];
+    $feedback_type = $_SESSION['feedback_type'];
+    unset($_SESSION['feedback_msg'], $_SESSION['feedback_type']);
 }
 ?>
 
@@ -45,6 +62,7 @@ try {
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+<title>广告位管理 - 后台管理</title>
 <link rel="stylesheet" type="text/css" href="../assets/css/materialdesignicons.min.css">
 <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="../assets/css/style.min.css">
@@ -88,7 +106,8 @@ try {
                                     <th width="80">排序</th>
                                     <th width="100">状态</th>
                                     <th width="150">创建时间</th>
-                                    <th width="150">操作</th>
+                                    <th width="150">有效期</th>
+                                    <th width="120">操作</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -102,7 +121,7 @@ try {
                                                 <?= htmlspecialchars($ad['link_url']) ?>
                                             </a>
                                         </td>
-                                        <td><?= htmlspecialchars($ad['contact']) ?></td>
+                                        <td><?= htmlspecialchars($ad['contact'] ?? '') ?></td>
                                         <td><?= $ad['sort_order'] ?></td>
                                         <td>
                                             <span class="badge status-badge bg-<?= $ad['status'] === 'active' ? 'success' : 'secondary' ?>">
@@ -111,14 +130,25 @@ try {
                                         </td>
                                         <td><?= date('Y-m-d H:i', strtotime($ad['created_at'])) ?></td>
                                         <td>
+                                            <?php if (!empty($ad['start_date']) || !empty($ad['end_date'])): ?>
+                                                <small class="text-muted">
+                                                    <?= htmlspecialchars($ad['start_date'] ?? '') ?>
+                                                    ~
+                                                    <?= htmlspecialchars($ad['end_date'] ?? '') ?>
+                                                </small>
+                                            <?php else: ?>
+                                                <span class="text-muted">长期有效</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
                                             <div class="btn-group btn-group-sm">
-                                                <a href="edit_advertisement.php?id=<?= $ad['id'] ?>" class="btn btn-outline-primary">
+                                                <a href="edit_advertisement.php?id=<?= $ad['id'] ?>" class="btn btn-outline-primary" title="编辑">
                                                     <i class="mdi mdi-pencil"></i>
                                                 </a>
-                                                <a href="?toggle_status=<?= $ad['id'] ?>" class="btn btn-outline-<?= $ad['status'] === 'active' ? 'warning' : 'success' ?>">
+                                                <a href="?toggle_status=<?= $ad['id'] ?>" class="btn btn-outline-<?= $ad['status'] === 'active' ? 'warning' : 'success' ?>" title="<?= $ad['status'] === 'active' ? '禁用' : '启用' ?>">
                                                     <i class="mdi mdi-<?= $ad['status'] === 'active' ? 'eye-off' : 'eye' ?>"></i>
                                                 </a>
-                                                <a href="?delete=<?= $ad['id'] ?>" class="btn btn-outline-danger" onclick="return confirm('确定要删除这个广告吗？此操作不可恢复。')">
+                                                <a href="?delete=<?= $ad['id'] ?>" class="btn btn-outline-danger" title="删除" onclick="return confirm('确定要删除这个广告吗？此操作不可恢复。')">
                                                     <i class="mdi mdi-delete"></i>
                                                 </a>
                                             </div>
@@ -127,7 +157,7 @@ try {
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="8" class="text-center text-muted py-4">
+                                        <td colspan="9" class="text-center text-muted py-4">
                                             <i class="mdi mdi-information-outline me-2"></i>暂无广告数据
                                         </td>
                                     </tr>

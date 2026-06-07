@@ -1,7 +1,7 @@
 <?php
-@session_start();
-@error_reporting(0);
-@ini_set('display_errors', 'Off');
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 'Off');
 if (!isset($_SESSION['admin_id'])) { 
     header('Location: login.php'); 
     exit; 
@@ -202,7 +202,7 @@ try {
             if (empty($remote_url)) { 
                 throw new Exception('远程接口地址不能为空。'); 
             }
-            $proxy_script = "@error_reporting(0);\n\$remote_url = '" . addslashes($remote_url) . "';\n\$method = '" . $method . "';\n\$params = array_merge(\$_GET, \$_POST);\n\$ch = curl_init();\n";
+            $proxy_script = "error_reporting(E_ALL);\n\$remote_url = '" . addslashes($remote_url) . "';\n\$method = '" . $method . "';\n\$params = array_merge(\$_GET, \$_POST);\n\$ch = curl_init();\n";
             $proxy_script .= "if (\$method === 'GET' && !empty(\$params)) { \$remote_url .= (strpos(\$remote_url, '?') === false ? '?' : '&') . http_build_query(\$params); }\n";
             $proxy_script .= "curl_setopt(\$ch, CURLOPT_URL, \$remote_url);\ncurl_setopt(\$ch, CURLOPT_RETURNTRANSFER, true);\ncurl_setopt(\$ch, CURLOPT_FOLLOWLOCATION, true);\n";
             $proxy_script .= "if (\$method === 'POST') { curl_setopt(\$ch, CURLOPT_POST, true); curl_setopt(\$ch, CURLOPT_POSTFIELDS, http_build_query(\$params)); }\n";
@@ -357,6 +357,7 @@ try {
             object-fit: cover;
         }
     </style>
+<title>Api Edit - 后台管理</title>
 </head>
 <body>
 <div class="container-fluid">        
