@@ -1,0 +1,237 @@
+/* API文档样式 */
+.zib-api-docs {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+/* API卡片 */
+.api-card {
+    background: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.api-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+.api-card-header{
+    padding:15px 20px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-bottom:1px solid #eee;
+}
+.api-method {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.api-method.get { background: #e3f2fd; color: #1976d2; }
+.api-method.post { background: #e8f5e9; color: #388e3c; }
+.api-method.put { background: #fff3e0; color: #f57c00; }
+.api-method.delete { background: #ffebee; color: #d32f2f; }
+.api-content {
+    padding: 20px;
+}
+.api-description {
+    margin-bottom: 30px;
+    color: #333;
+}
+.endpoint-box {
+    background: #f7f7f7;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+    position: relative;
+}
+.endpoint-box code {
+    font-size: 14px;
+    color: #333;
+}
+.copy-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s ease;
+}
+.copy-btn:hover {
+    color: #1976d2;
+}
+.parameter-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+.parameter-table th,
+.parameter-table td {
+    padding: 12px;
+    border: 1px solid #eee;
+    text-align: left;
+}
+.parameter-table th {
+    background: #f7f7f7;
+    font-weight: 600;
+}
+.parameter-table td code {
+    background: #f7f7f7;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 13px;
+    color: #333;
+}
+.test-form {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+    transition: border-color 0.2s ease;
+}
+.form-group input:focus {
+    border-color: #1976d2;
+    outline: none;
+}
+.test-result {
+    margin-top: 20px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.test-result pre,.response-example pre {
+    margin: 0;
+    padding: 15px;
+    background: #f7f7f7;
+    overflow-x: auto;
+}
+.test-result code,.response-example code {
+    font-size: 13px;
+    color: #333;
+}
+.access-denied,
+.need-login {
+    text-align: center;
+    padding: 30px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+.access-denied p,
+.need-login p {
+    margin-bottom: 15px;
+    color: #666;
+}
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-primary {
+    background: #1976d2;
+    color: #fff;
+    border: none;
+}
+.btn-primary:hover {
+    background: #1565c0;
+}
+
+/* =====夜间配色 和列表统一 #1E2029===== */
+body.dark-theme .api-card,
+body.dark-theme .test-result,
+body.dark-theme .access-denied,
+body.dark-theme .need-login{
+    background:#1E2029;
+    border-color:#343746;
+}
+body.dark-theme .api-card-header{
+    border-bottom-color:#343746;
+}
+body.dark-theme .endpoint-box,
+body.dark-theme pre,
+body.dark-theme td code,
+body.dark-theme .parameter-table th{
+    background:#272935;
+}
+body.dark-theme .test-form{
+    background:#1E2029;
+    border:1px solid #343746;
+}
+body.dark-theme .form-group input,
+body.dark-theme .form-group textarea{
+    background:#232530;
+    border-color:#343746;
+    color:#E5E7EB;
+}
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme label,
+body.dark-theme .api-description{
+    color:#E5E7EB;
+}
+body.dark-theme .copy-btn,
+body.dark-theme .access-denied p,
+body.dark-theme .need-login p{
+    color:#9CA3AF;
+}
+body.dark-theme .endpoint-box code,
+body.dark-theme pre code,
+body.dark-theme td code{
+    color:#DFE1E5;
+}
+body.dark-theme .parameter-table td{
+    border-color:#343746;
+    color:#E5E7EB;
+}
+body.dark-theme .api-method.get { background:#1a237e;color:#90caf9; }
+body.dark-theme .api-method.post { background:#1b5e20;color:#a5d6a7; }
+body.dark-theme .api-method.put { background:#e65100;color:#ffe0b2; }
+body.dark-theme .api-method.delete { background:#b71c1c;color:#ffcdd2; }
+
+@media (max-width: 768px) {
+    .zib-api-docs {
+        padding: 15px;
+    }
+    .parameter-table {
+        display: block;
+        overflow-x: auto;
+    }
+    .endpoint-box {
+        padding-right: 40px;
+    }
+}
