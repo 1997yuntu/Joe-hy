@@ -1,8 +1,21 @@
 <?php
+/**
+ * 基础设置视图文件 (仅在非 CSF 模式下使用)
+ * 如果使用子比主题 CSF 框架，设置将在 yxs-api 菜单的"API 基础设置"标签页中管理
+ */
 if (!defined('ABSPATH')) {
     exit;
 }
 
+if ( class_exists( 'CSF' ) ) {
+    echo '<div class="wrap">';
+    echo '<h1>提示</h1>';
+    echo '<div class="notice notice-info"><p>您已启用子比主题 CSF 框架，所有设置请在 <strong>网亿 API</strong> 菜单中进行管理。</p></div>';
+    echo '</div>';
+    return;
+}
+
+$settings = get_option( 'yxs_api_settings', array() );
 $redis_settings = isset($settings['redis']) ? $settings['redis'] : array();
 $rate_limits = isset($settings['rate_limits']) ? $settings['rate_limits'] : array();
 ?>

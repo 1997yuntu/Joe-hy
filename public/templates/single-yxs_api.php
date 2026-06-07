@@ -1,25 +1,22 @@
 <?php
 /**
- * API详情页面模板
+ * API 详情页面模板 - 子比主题优化版
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-// 获取API详情
 $endpoint = get_post_meta(get_the_ID(), 'endpoint', true);
 $method = get_post_meta(get_the_ID(), 'method', true);
 $response_format = get_post_meta(get_the_ID(), 'response_format', true);
 $request_params = get_post_meta(get_the_ID(), 'request_params', true);
 $response_example = get_post_meta(get_the_ID(), 'response_example', true);
 
-// 解码JSON数据
 $request_params = !empty($request_params) ? json_decode($request_params, true) : array();
 $response_format = !empty($response_format) ? json_decode($response_format, true) : array();
 $response_example = !empty($response_example) ? json_decode($response_example, true) : array();
 
-// 获取用户API密钥
 $api_manager = new Yxs_API_Manager();
 $api_key = '';
 if (is_user_logged_in()) {
@@ -32,14 +29,136 @@ if (is_user_logged_in()) {
 get_header();
 ?>
 
-<div class="api-doc-container">
-    <!-- API基本信息 -->
-    <div class="api-header">
-        <h1><?php the_title(); ?></h1>
-        <div class="api-meta">
-            <span class="api-method <?php echo strtolower($method); ?>"><?php echo $method; ?></span>
-            <span class="api-endpoint"><?php echo esc_html($endpoint); ?></span>
+<div class="api-detail-page">
+    <div class="container">
+        <!-- 返回按钮 -->
+        <div class="back-nav">
+            <a href="<?php echo get_post_type_archive_link('yxs_api'); ?>" class="back-btn">
+                <i class="fa fa-arrow-left"></i>
+                <span>返回 API 列表</span>
+            </a>
         </div>
+
+        <!-- API 头部卡片 -->
+        <div class="api-header-card">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="api-icon">
+                        <i class="fa fa-bolt"></i>
+                    </div>
+                    <div class="api-info">
+                        <h1 class="api-title"><?php the_title(); ?></h1>
+                        <div class="api-meta-row">
+                            <span class="api-method <?php echo strtolower($method); ?>">
+                                <i class="fa fa-code"></i>
+                                <?php echo $method; ?>
+                            </span>
+                            <code class="api-endpoint"><?php echo esc_html($endpoint); ?></code>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <a href="#test-area" class="test-btn">
+                        <i class="fa fa-play"></i>
+                        <span>在线测试</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-detail-layout">
+            <!-- 左侧主内容 -->
+            <main class="api-main">
+                <!-- 接口说明 -->
+                <section class="api-section">
+                    <div class="section-header">
+                        <i class="fa fa-file-text"></i>
+                        <h2>接口说明</h2>
+                    </div>
+                    <div class="section-content">
+                        <?php the_content(); ?>
+                    </div>
+                </section>
+
+                <!-- 请求参数 -->
+                <section class="api-section">
+                    <div class="section-header">
+                        <i class="fa fa-cog"></i>
+                        <h2>请求参数</h2>
+                    </div>
+                    <div class="section-content">
+                        <div class="endpoint-box">
+                            <div class="endpoint-label">请求地址</div>
+                            <div class="endpoint-url" data-clipboard-text="<?php echo home_url('/wp-json/yxs/v1' . $endpoint); ?>">
+                                <code><?php echo home_url('/wp-json/yxs/v1' . $endpoint); ?></code>
+                                <button class="copy-tip" title="点击复制链接">
+                                    <i class="fa fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="request-headers">
+                            <h3><i class="fa fa-header"></i> 请求头</h3>
+                            <div class="param-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>参数名</th>
+                                            <th>必填</th>
+                                            <th>说明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>X-API-Key</code></td>
+                                            <td><span class="tag required">是</span></td>
+                                            <td>API 密钥，用于认证请求</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Content-Type</code></td>
+                                            <td><span class="tag required">是</span></td>
+                                            <td>请求内容类型，固定为 application/json</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <?php if (!empty($request_params)): ?>
+                        <h3><i class="fa fa-list"></i> 请求参数</h3>
+                        <div class="param-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>参数名</th>
+                                        <th>类型</th>
+                                        <th>必填</th>
+                                        <th>说明</th>
+                                        <th>示例值</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($request_params as $param_name => $param_info): ?>
+                                    <tr>
+                                        <td><code class="param-name"><?php echo esc_html($param_name); ?></code></td>
+                                        <td><span class="type-tag"><?php echo esc_html($param_info['type']); ?></span></td>
+                                        <td>
+                                            <?php if (!empty($param_info['required'])): ?>
+                                                <span class="tag required">是</span>
+                                            <?php else: ?>
+                                                <span class="tag optional">否</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo esc_html($param_info['description']); ?></td>
+                                        <td><code><?php echo esc_html($param_info['example'] ?? ''); ?></code></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </section>
     </div>
 
     <!-- API说明 -->

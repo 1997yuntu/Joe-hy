@@ -112,13 +112,14 @@ add_action('plugins_loaded', 'yxs_api_load_textdomain');
 function yxs_api_enqueue_scripts() {
     if (is_singular('yxs_api')) {
         wp_enqueue_style('yxs-api', YXS_API_PLUGIN_URL . 'public/css/style.css', array(), YXS_API_VERSION);
-        // 替换本地clipboard → bootcdn国内2.0.11
+        wp_enqueue_style('yxs-api-detail', YXS_API_PLUGIN_URL . 'public/css/api-detail.css', array('yxs-api'), YXS_API_VERSION);
+        // 替换本地 clipboard → bootcdn 2.0.11
         wp_enqueue_script('clipboard','https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.11/clipboard.min.js', array(), '2.0.11', true);
         wp_enqueue_script('yxs-api', YXS_API_PLUGIN_URL . 'public/js/script.js', array('jquery', 'clipboard'), YXS_API_VERSION, true);
         
         wp_enqueue_script('api-docs', YXS_API_PLUGIN_URL . 'public/js/api-docs.js', array('jquery'), YXS_API_VERSION, true);
         
-        // 获取当前API详情
+        // 获取当前 API 详情
         $post_id = get_the_ID();
         $endpoint = get_post_meta($post_id, 'endpoint', true);
         $method = get_post_meta($post_id, 'method', true);

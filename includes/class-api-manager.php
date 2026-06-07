@@ -199,7 +199,6 @@ class Yxs_API_Manager {
             return false;
         }
 
-        // 返回现有的API密钥信息
         return array(
             'api_key' => $existing_key->api_key
         );
@@ -244,7 +243,7 @@ class Yxs_API_Manager {
     }
 
     /**
-     * 验证API密钥
+     * 验证 API 密钥
      */
     public function validate_api_key($api_key) {
         global $wpdb;
@@ -259,6 +258,23 @@ class Yxs_API_Manager {
 
         return !empty($key_data);
     }
+    
+    /**
+     * 获取 API 密钥关联的用户 ID
+     */
+    public function get_user_id_by_api_key($api_key) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'yxs_api_keys';
+        
+        $key_data = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT user_id FROM $table_name WHERE api_key = %s AND status = 'active'",
+                $api_key
+            )
+        );
+
+        return $key_data ? (int) $key_data->user_id : 0;
+    }
 
     /**
      * 修改查询以支持自定义链接结构
@@ -267,6 +283,19 @@ class Yxs_API_Manager {
         if (!$query->is_main_query() || is_admin()) {
             return;
         }
+
+        $request_uri = trim($_SERVER['REQUEST_URI'] ?? '', '/');
+        
+        if (preg_match('/^(\d+)\.html$/', $request_uri, $matches)) {
+            $post_id = (int) $matches[1];
+            
+            $post = get_post($post_id);
+            if ($post && $post->post_type === 'yxs_api') {
+                $query->set('post_type', 'yxs_api');
+                $query->set('p', $post_id);
+            }
+        }
+    }
 
         // 获取当前请求的URL路径
         $request_uri = trim($_SERVER['REQUEST_URI'], '/');
@@ -327,22 +356,20 @@ class Yxs_API_Manager {
     }
 
     /**
-     * 渲染API元数据框
+     * 渲染 API 元数据框
      */
     public function render_api_meta_box($post) {
-        // 获取现有的值
         $endpoint = get_post_meta($post->ID, 'endpoint', true);
         $method = get_post_meta($post->ID, 'method', true);
         $response_format = get_post_meta($post->ID, 'response_format', true);
         $request_params = get_post_meta($post->ID, 'request_params', true);
         $response_example = get_post_meta($post->ID, 'response_example', true);
 
-        // 添加nonce以进行安全检查
         wp_nonce_field('yxs_api_meta_box', 'yxs_api_meta_box_nonce');
         ?>
         <table class="form-table">
             <tr>
-                <th><label for="endpoint">API端点</label></th>
+                <th><label for="endpoint">API 端点</label></th>
                 <td>
                     <input type="text" id="endpoint" name="endpoint" value="<?php echo esc_attr($endpoint); ?>" class="regular-text">
                     <p class="description">例如：/test</p>
@@ -362,18 +389,26 @@ class Yxs_API_Manager {
             <tr>
                 <th><label for="request_params">请求参数</label></th>
                 <td>
-                    <textarea id="request_params" name="request_params" rows="5" class="large-text code">{
-    "realName": {
-        "type": "string",
-        "required": true,
-        "description": "姓名",
-        "example": "张三"
-    },
-    "cardNo": {
-        "type": "string",
-        "required": true,
-        "description": "身份证号码",
-        "example": "110101199001011234"
+                    <textarea id="request_params" name="request_params" rows="5" class="large-text code"><?php echo esc_textarea($request_params); ?></textarea>
+                    <p class="description">请使用 JSON 格式描述请求参数</p>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="response_format">返回格式</label></th>
+                <td>
+                    <textarea id="response_format" name="response_format" rows="5" class="large-text code"><?php echo esc_textarea($response_format); ?></textarea>
+                    <p class="description">请使用 JSON 格式描述返回数据结构</p>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="response_example">返回示例</label></th>
+                <td>
+                    <textarea id="response_example" name="response_example" rows="5" class="large-text code"><?php echo esc_textarea($response_example); ?></textarea>
+                    <p class="description">请提供一个返回数据的示例（JSON 格式）</p>
+                </td>
+            </tr>
+        </table>
+        <?php
     }
 }</textarea>
                     <p class="description">请使用JSON格式描述请求参数</p>
@@ -434,13 +469,30 @@ class Yxs_API_Manager {
     }
 
     /**
-     * 保存API元数据
+     * 保存 API 元数据
      */
     public function save_api_meta($post_id) {
-        // 检查是否是自动保存
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
+
+        if (!isset($_POST['yxs_api_meta_box_nonce']) || !wp_verify_nonce($_POST['yxs_api_meta_box_nonce'], 'yxs_api_meta_box')) {
+            return;
+        }
+
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+
+        $fields = array('endpoint', 'method', 'response_format', 'request_params', 'response_example');
+        foreach ($fields as $field) {
+            if (isset($_POST[$field])) {
+                update_post_meta($post_id, $field, sanitize_textarea_field($_POST[$field]));
+            } else {
+                delete_post_meta($post_id, $field);
+            }
+        }
+    }
 
         // 验证nonce
         if (!isset($_POST['yxs_api_meta_box_nonce']) || !wp_verify_nonce($_POST['yxs_api_meta_box_nonce'], 'yxs_api_meta_box')) {
@@ -465,7 +517,7 @@ class Yxs_API_Manager {
     }
 
     /**
-     * 创建API实现文件
+     * 自动生成 API 密钥
      */
     private function create_api_implementation_file($post_id) {
         // 获取API信息
