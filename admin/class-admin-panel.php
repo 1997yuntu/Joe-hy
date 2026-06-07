@@ -17,12 +17,12 @@ class Yxs_Admin_Panel {
         add_action('wp_ajax_yxs_toggle_api_key',array($this,'ajax_toggle_key'));
         add_action('wp_ajax_yxs_delete_api_key',array($this,'ajax_delete_key'));
         
-        $this->api_manager = new Yxs_API_Manager();
-        
         if ( class_exists( 'CSF' ) ) {
             add_filter( 'csf_options_yxs_api_options', array( $this, 'csf_option_defaults' ) );
             add_action( 'admin_init', array( $this, 'register_csf_settings' ) );
         }
+        
+        $this->api_manager = new Yxs_API_Manager();
     }
 
     /**

@@ -20,8 +20,13 @@ define('YXS_API_PLUGIN_URL', plugin_dir_url(__FILE__));
 // 核心模块加载
 require_once YXS_API_PLUGIN_DIR . 'includes/class-api-manager.php';
 require_once YXS_API_PLUGIN_DIR . 'includes/class-statistics.php';
+require_once YXS_API_PLUGIN_DIR . 'includes/class-auth.php';
+require_once YXS_API_PLUGIN_DIR . 'includes/class-rate-limiter.php';
+require_once YXS_API_PLUGIN_DIR . 'includes/class-db-tables.php';
+require_once YXS_API_PLUGIN_DIR . 'includes/class-zibll-integration.php';
 require_once YXS_API_PLUGIN_DIR . 'admin/class-admin-panel.php';
 require_once YXS_API_PLUGIN_DIR . 'public/class-api-endpoints.php';
+require_once YXS_API_PLUGIN_DIR . 'public/class-shortcodes.php';
 
 // 添加重写规则
 add_action('init', 'yxs_api_add_rewrite_rules');
