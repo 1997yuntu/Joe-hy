@@ -509,90 +509,17 @@ class Yxs_API_Manager {
         foreach ($fields as $field) {
             if (isset($_POST[$field])) {
                 update_post_meta($post_id, $field, sanitize_textarea_field($_POST[$field]));
+            } else {
+                delete_post_meta($post_id, $field);
             }
         }
-
-        // 创建API实现文件
-        $this->create_api_implementation_file($post_id);
     }
 
     /**
      * 自动生成 API 密钥
      */
-    private function create_api_implementation_file($post_id) {
-        // 获取API信息
-        $endpoint = get_post_meta($post_id, 'endpoint', true);
-        $method = get_post_meta($post_id, 'method', true);
-        
-        if (empty($endpoint) || empty($method)) {
-            return false;
-        }
-        
-        // 根据端点生成文件名
-        $file_name = sanitize_file_name(str_replace('/', '-', ltrim($endpoint, '/'))) . '.php';
-        $file_path = YXS_API_PLUGIN_DIR . 'apimod/' . $file_name;
-        
-        // 如果文件已存在，不重新创建
-        if (file_exists($file_path)) {
-            return true;
-        }
-        
-        // 生成类名
-        $class_name = ucfirst(str_replace('-', '_', ltrim($endpoint, '/'))) . '_API';
-        
-        // 生成文件内容
-        $content = '<?php
-/**
- * API名称：' . get_the_title($post_id) . '
- * 端点：' . $endpoint . '
- * 方法：' . $method . '
- */
-
-class ' . $class_name . ' {
-    /**
-     * 处理API请求
-     */
-    public function handle_request($request) {
-        // 获取请求参数
-        $params = $request->get_params();
-        
-        // 验证必填参数
-        if (empty($params[\'name\'])) {
-            return array(
-                \'status\' => \'error\',
-                \'message\' => \'用户名不能为空\',
-                \'code\' => 400
-            );
-        }
-        
-        // 返回固定响应
-        return array(
-            \'status\' => \'success\',
-            \'message\' => \'请求成功\',
-            \'data\' => \'123\'
-        );
-    }
-}';
-        
-        // 创建目录（如果不存在）
-        if (!file_exists(YXS_API_PLUGIN_DIR . 'apimod')) {
-            mkdir(YXS_API_PLUGIN_DIR . 'apimod', 0755, true);
-        }
-        
-        // 写入文件
-        if (file_put_contents($file_path, $content) === false) {
-            error_log('无法创建API实现文件：' . $file_path);
-            return false;
-        }
-        
-        return true;
-    }
-
-    /**
-     * 自动生成API密钥
-     */
     public function auto_generate_api_key() {
-        // 只在API页面执行
+        // 只在 API 页面执行
         if (!is_singular('yxs_api')) {
             return;
         }
@@ -602,10 +529,10 @@ class ' . $class_name . ' {
             return;
         }
 
-        // 检查并生成API密钥
+        // 检查并生成 API 密钥
         $this->check_user_api_key();
     }
 }
 
 // 初始化类
-new Yxs_API_Manager(); 
+new Yxs_API_Manager();
